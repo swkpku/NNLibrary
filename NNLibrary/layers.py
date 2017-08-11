@@ -32,6 +32,20 @@ def relu_backward(dout, cache):
 
     return dx
 
+def leaky_relu_forward(x):
+    out = x.copy()
+    out[x < 0] *= 0.01
+    cache = x
+
+    return out, cache
+
+def leaky_relu_backward(dout, cache):
+    x = cache
+    dx = dout.copy()
+    dx[x < 0] *= 0.01
+
+    return dx
+
 def softmax_loss(x, y):
     shifted_logits = x - np.max(x, axis=1, keepdims=True)
     Z = np.sum(np.exp(shifted_logits), axis=1, keepdims=True)
