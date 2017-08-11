@@ -33,14 +33,13 @@ def relu_backward(dout, cache):
     return dx
 
 def softmax_loss(x, y):
+    shifted_logits = x - np.max(x, axis=1, keepdims=True)
+    Z = np.sum(np.exp(shifted_logits), axis=1, keepdims=True)
+    log_probs = shifted_logits - np.log(Z)
+    probs = np.exp(log_probs)
     N = x.shape[0]
-    shifted_x = x - np.max(x, axis=1, keepdims=True)
-    softmax = np.exp(shifted_x) / np.sum(np.exp(shifted_x), axis=1).reshape(-1,1)
-    loss = np.sum(-np.log(softmax[range(N), y]))
-    loss /= N
-
-    dx = softmax.copy()
-    dx[range(N), y] -= 1
+    loss = -np.sum(log_probs[np.arange(N), y]) / N
+    dx = probs.copy()
+    dx[np.arange(N), y] -= 1
     dx /= N
-
     return loss, dx
